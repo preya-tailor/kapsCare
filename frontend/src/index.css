@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for enhanced spa design */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply font-sans antialiased;
+  }
+}
+
+@layer components {
+  .glass-effect {
+    @apply bg-white/95 backdrop-blur-sm border border-white/20;
+  }
+  
+  .glass-effect-dark {
+    @apply bg-gray-800/95 backdrop-blur-sm border border-gray-700/20;
+  }
+  
+  .gradient-peach {
+    @apply bg-gradient-to-r from-peach-500 to-peach-600;
+  }
+  
+  .gradient-peach-dark {
+    @apply bg-gradient-to-r from-peach-600 to-peach-700;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-r from-peach-600 to-peach-700 bg-clip-text text-transparent;
+  }
+}
+
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+  
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+  
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+  
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+  
+  .animation-delay-600 {
+    animation-delay: 600ms;
+  }
+  
+  .animation-delay-700 {
+    animation-delay: 700ms;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-peach-500 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-peach-600;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+:root {
+  --bg-light: rgba(255, 255, 255, 0.85); /* transparent white */
+  --bg-accent: rgba(239, 223, 197, 0.8); /* warm beige tint */
+  --text-dark: #3e3e3e;
+  --border-light: rgba(200, 200, 200, 0.4);
+}
+
