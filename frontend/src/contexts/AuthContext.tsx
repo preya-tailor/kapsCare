@@ -8,18 +8,12 @@ interface AuthState {
 }
 
 interface AuthContextType extends AuthState {
-  login: (email: string, password: string) => Promise<void>;
-  register: (userData: RegisterData) => Promise<void>;
+  // Step 1: Request OTP
+  requestOtp: (identifier: string) => Promise<void>;
+  // Step 2: Verify OTP
+  verifyOtp: (identifier: string, otp: string) => Promise<void>;
   logout: () => void;
   updateProfile: (userData: Partial<User>) => Promise<void>;
-}
-
-interface RegisterData {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  phone?: string;
 }
 
 type AuthAction = 
@@ -68,43 +62,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, []);
 
-  const login = async (email: string, password: string) => {
+  // Mocked OTP request
+  const requestOtp = async (identifier: string) => {
     dispatch({ type: 'SET_LOADING', payload: true });
-    
-    // Mock API call - replace with actual API
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const mockUser: User = {
-      id: '1',
-      email,
-      firstName: 'John',
-      lastName: 'Doe',
-      role: email === 'admin@ayurveda.com' ? 'admin' : 'customer',
-      createdAt: new Date().toISOString(),
-    };
-    
-    localStorage.setItem('token', 'mock-token');
-    localStorage.setItem('user', JSON.stringify(mockUser));
-    dispatch({ type: 'SET_USER', payload: mockUser });
+    await new Promise(resolve => setTimeout(resolve, 600));
+    dispatch({ type: 'SET_LOADING', payload: false });
   };
 
-  const register = async (userData: RegisterData) => {
+  // Mocked OTP verification
+  const verifyOtp = async (identifier: string, otp: string) => {
     dispatch({ type: 'SET_LOADING', payload: true });
-    
-    // Mock API call - replace with actual API
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+    await new Promise(resolve => setTimeout(resolve, 800));
+
     const mockUser: User = {
       id: '1',
-      email: userData.email,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
+      email: identifier.includes('@') ? identifier : `${identifier}@placeholder.local`,
+      firstName: 'User',
+      lastName: 'One',
       role: 'customer',
-      phone: userData.phone,
       createdAt: new Date().toISOString(),
+      phone: identifier.includes('@') ? undefined : identifier,
     };
-    
-    localStorage.setItem('token', 'mock-token');
+
+    localStorage.setItem('token', 'mock-otp-token');
     localStorage.setItem('user', JSON.stringify(mockUser));
     dispatch({ type: 'SET_USER', payload: mockUser });
   };
@@ -117,7 +97,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const updateProfile = async (userData: Partial<User>) => {
     if (!state.user) return;
-    
     const updatedUser = { ...state.user, ...userData };
     localStorage.setItem('user', JSON.stringify(updatedUser));
     dispatch({ type: 'SET_USER', payload: updatedUser });
@@ -126,8 +105,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   return (
     <AuthContext.Provider value={{
       ...state,
-      login,
-      register,
+      requestOtp,
+      verifyOtp,
       logout,
       updateProfile,
     }}>

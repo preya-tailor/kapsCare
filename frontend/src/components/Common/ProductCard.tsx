@@ -40,7 +40,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, index = 0 }) => {
               className="p-2 bg-white dark:bg-gray-800 rounded-full shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
               onClick={(e) => {
                 e.preventDefault();
-                // Add to wishlist functionality
               }}
             >
               <Heart className="w-4 h-4 text-gray-600 dark:text-gray-400" />

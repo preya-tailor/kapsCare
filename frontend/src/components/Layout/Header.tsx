@@ -15,13 +15,11 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
-// import { useTheme } from '../../contexts/ThemeContext';
 import logoImage from '../../assets/images/logo.png';
 
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const { totalItems } = useCart();
-  // const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
