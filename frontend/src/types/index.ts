@@ -21,18 +21,15 @@ export interface Product {
   id: string;
   name: string;
   description: string;
-  price: number;
-  image: string;
-  images: string[];
-  category: string;
-  ingredients: string[];
   benefits: string[];
-  usage: string;
-  inStock: boolean;
-  stockQuantity: number;
-  rating: number;
-  reviews: Review[];
+  directions: string[];
+  price: number;
+  mainImage: string;
+  additionalImages: string[];
+  categoryId: string;
+  category: Category;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface Review {

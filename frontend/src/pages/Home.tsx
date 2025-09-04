@@ -3,31 +3,36 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Star, Shield, Truck, Leaf, Sparkles, Heart, Users, Award } from 'lucide-react';
 import ProductCard from '../components/Common/ProductCard';
-import { mockProducts } from '../data/mockData';
 import { getCategories } from '../services/categoryService';
-import { Category } from '../types';
+import { getProducts } from '../services/productService';
+import { Category, Product } from '../types';
 
 const Home: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getCategories();
-        setCategories(data);
+        const [categoriesData, productsData] = await Promise.all([
+          getCategories(),
+          getProducts()
+        ]);
+        setCategories(categoriesData);
+        setProducts(productsData);
         setLoading(false);
       } catch (error) {
-        setError('Failed to fetch categories');
+        setError('Failed to fetch data');
         setLoading(false);
       }
     };
 
-    fetchCategories();
+    fetchData();
   }, []);
 
-  const featuredProducts = mockProducts.slice(0, 4);
+  const featuredProducts = products.slice(0, 4);
   const benefits = [
     {
       icon: Leaf,
@@ -362,7 +367,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Featured Products */}
-      <section className="py-24 bg-gradient-to-br from-[#efdfc5] via-[#efdfc5]/90 to-[#efdfc5]/80 dark:from-[#1c1108] dark:via-[#1c1108]/90 dark:to-[#1c1108]/80">
+      <section className="py-24 bg-gradient-to-br from-[#efdfc5] via-[#efdfc5]/90 to-[#efdfc5]/80">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <motion.div
@@ -391,16 +396,24 @@ const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product, index) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <ProductCard product={product} index={index} />
-              </motion.div>
-            ))}
+            {loading ? (
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#1c1108] mx-auto"></div>
+              </div>
+            ) : error ? (
+              <div className="text-center text-red-500">{error}</div>
+            ) : (
+              featuredProducts.map((product, index) => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                >
+                  <ProductCard product={product} index={index} />
+                </motion.div>
+              ))
+            )}
           </div>
 
           <div className="text-center mt-12">

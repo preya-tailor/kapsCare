@@ -1,23 +1,61 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Filter, Grid, List, SlidersHorizontal } from 'lucide-react';
 import ProductCard from '../components/Common/ProductCard';
-import { mockProducts } from '../data/mockData';
+import { getProducts, getProductsByCategory } from '../services/productService';
+import { getCategories } from '../services/categoryService';
+import { Product, Category } from '../types';
 
 const Shop: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]); // Adjusted for realistic price range
   const [sortBy, setSortBy] = useState<string>('name');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
 
-  const filteredProducts = useMemo(() => {
-    let filtered = mockProducts;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [categoriesData, productsData] = await Promise.all([
+          getCategories(),
+          getProducts()
+        ]);
+        setCategories(categoriesData);
+        setProducts(productsData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Filter by category
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(product => product.category === selectedCategory);
-    }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchProductsByCategory = async () => {
+      try {
+        setLoading(true);
+        const data = selectedCategory === 'all' 
+          ? await getProducts()
+          : await getProductsByCategory(selectedCategory);
+        setProducts(data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProductsByCategory();
+  }, [selectedCategory]);
+
+  const filteredProducts = useMemo(() => {
+    let filtered = products;
 
     // Filter by price range
     filtered = filtered.filter(product => 
@@ -28,11 +66,9 @@ const Shop: React.FC = () => {
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'price-low':
-          return a.price - b.price;
+          return Number(a.price) - Number(b.price);
         case 'price-high':
-          return b.price - a.price;
-        case 'rating':
-          return b.rating - a.rating;
+          return Number(b.price) - Number(a.price);
         case 'name':
         default:
           return a.name.localeCompare(b.name);
@@ -40,15 +76,24 @@ const Shop: React.FC = () => {
     });
 
     return filtered;
-  }, [selectedCategory, priceRange, sortBy]);
+  }, [products, priceRange, sortBy]);
 
-  const categories = [
+  // Update the categories section in the render
+  const categoryOptions = [
     { id: 'all', name: 'All Products' },
-    { id: 'herbs', name: 'Herbs & Powders' },
-    { id: 'capsules', name: 'Capsules & Tablets' },
-    { id: 'teas', name: 'Herbal Teas' },
-    { id: 'oils', name: 'Essential Oils' },
+    ...categories.map(cat => ({
+      id: cat.id,
+      name: cat.name
+    }))
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#efdfc5]">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#1c1108]"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -134,7 +179,7 @@ const Shop: React.FC = () => {
               <div className="mb-6">
                 <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Category</h4>
                 <div className="space-y-2">
-                  {categories.map((category) => (
+                  {categoryOptions.map((category) => (
                     <label key={category.id} className="flex items-center">
                       <input
                         type="radio"
@@ -208,7 +253,11 @@ const Shop: React.FC = () => {
                   : 'grid-cols-1'
               }`}>
                 {filteredProducts.map((product, index) => (
-                  <ProductCard key={product.id} product={product} index={index} />
+                  <ProductCard 
+                    key={product.id} 
+                    product={product} 
+                    index={index} 
+                  />
                 ))}
               </div>
             )}
