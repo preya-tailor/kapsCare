@@ -15,10 +15,13 @@ export const getProducts = async (): Promise<Product[]> => {
 
 export const getProductsByCategory = async (categoryId: string): Promise<Product[]> => {
   try {
+    if (categoryId === "all") {
+      return getProducts();
+    }
     const response = await axios.get(`${API_URL}/products/category/${categoryId}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching products by category:', error);
+    console.error("Error fetching products by category:", error);
     throw error;
   }
 };

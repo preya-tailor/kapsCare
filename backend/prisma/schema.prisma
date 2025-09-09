@@ -2,32 +2,32 @@ generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
+ datasource db {
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model Product {
-  id              String    @id @default(uuid())
-  name            String    @unique
-  description     String
-  benefits        String[]
-  directions      String[]
-  price          Decimal   @db.Decimal(10, 2)
-  mainImage       String
-  additionalImages String[] @default([])
-  categoryId      String
-  category        Category  @relation(fields: [categoryId], references: [id])
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @default(now()) @updatedAt
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  name             String    @unique
+  description      String
+  benefits         String[]
+  directions       String[]
+  price            Float
+  mainImage        String
+  additionalImages String[]  @default([])
+  categoryId       String    @db.ObjectId
+  category         Category  @relation(fields: [categoryId], references: [id])
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
 
 model Category {
-  id          String    @id @default(uuid())
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   name        String    @unique
   description String
   image       String
   products    Product[]
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now()) @updatedAt
+  updatedAt   DateTime  @updatedAt
 }

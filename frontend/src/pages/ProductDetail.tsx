@@ -49,9 +49,9 @@ const ProductDetail: React.FC = () => {
 
   const tabs = [
     { id: 'description', label: 'Description' },
-    { id: 'ingredients', label: 'Ingredients' },
+    // { id: 'ingredients', label: 'Ingredients' },
     { id: 'usage', label: 'Usage' },
-    { id: 'reviews', label: 'Reviews' },
+    // { id: 'reviews', label: 'Reviews' },
   ];
 
   const allImages = product ? [product.mainImage, ...product.additionalImages] : [];
@@ -80,7 +80,7 @@ const ProductDetail: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#efdfc5]">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">

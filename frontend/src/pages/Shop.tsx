@@ -36,23 +36,22 @@ const Shop: React.FC = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    const fetchProductsByCategory = async () => {
-      try {
-        setLoading(true);
-        const data = selectedCategory === 'all' 
-          ? await getProducts()
-          : await getProductsByCategory(selectedCategory);
-        setProducts(data);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  const fetchProductsByCategory = async () => {
+    try {
+      setLoading(true);
+      const data = await getProductsByCategory(selectedCategory);
+      setProducts(data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchProductsByCategory();
-  }, [selectedCategory]);
+  fetchProductsByCategory();
+}, [selectedCategory]);
+
 
   const filteredProducts = useMemo(() => {
     let filtered = products;
