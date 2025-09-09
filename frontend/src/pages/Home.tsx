@@ -5,13 +5,17 @@ import { ArrowRight, Star, Shield, Truck, Leaf, Sparkles, Heart, Users, Award } 
 import ProductCard from '../components/Common/ProductCard';
 import { getCategories } from '../services/categoryService';
 import { getProducts } from '../services/productService';
-import { Category, Product } from '../types';
+import { Category, Product, Review } from '../types';
+import { getReviews } from '../services/reviewService';
 
 const Home: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+  const [reviewsError, setReviewsError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,6 +34,21 @@ const Home: React.FC = () => {
     };
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const data = await getReviews();
+        setReviews(data);
+        setLoadingReviews(false);
+      } catch (error) {
+        setReviewsError("Failed to fetch reviews");
+        setLoadingReviews(false);
+      }
+    };
+
+    fetchReviews();
   }, []);
 
   const featuredProducts = products.slice(0, 4);
@@ -91,9 +110,9 @@ const Home: React.FC = () => {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative h-screen bg-gradient-to-br from-[#efdfc5] to-[#efdfc5]/90 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/3777622/pexels-photo-3777622.jpeg?auto=compress&cs=tinysrgb&w=1920')] bg-cover bg-center opacity-10"></div>
+        <div className="absolute inset-0 bg-cover bg-center opacity-10"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-[#efdfc5]/70 to-transparent"></div>
-        
+
         {/* Floating Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 left-10 w-20 h-20 bg-[#1c1108]/10 rounded-full blur-sm animate-pulse"></div>
@@ -118,19 +137,19 @@ const Home: React.FC = () => {
                 <Sparkles className="w-4 h-4 mr-2 text-[#1c1108]" />
                 Ancient Wisdom, Modern Wellness
               </motion.div>
-              
+
               <h1 className="text-5xl md:text-7xl font-light text-[#1c1108] mb-6 leading-tight">
                 Discover Your
                 <span className="block font-semibold text-[#1c1108]">
                   Inner Balance
                 </span>
               </h1>
-              
+
               <p className="text-xl text-[#1c1108]/80 mb-8 max-w-xl leading-relaxed">
-                Experience the transformative power of authentic Ayurvedic healing. 
+                Experience the transformative power of authentic Ayurvedic healing.
                 Our premium collection of natural remedies brings ancient wisdom to your modern life.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link to="/shop">
                   <motion.button
@@ -153,7 +172,7 @@ const Home: React.FC = () => {
                 </Link>
               </div>
             </motion.div>
-            
+
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
@@ -168,7 +187,7 @@ const Home: React.FC = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1c1108]/20 to-transparent rounded-3xl"></div>
               </div>
-              
+
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -251,7 +270,7 @@ const Home: React.FC = () => {
               transition={{ duration: 0.6 }}
               className="text-4xl md:text-5xl font-light text-[#1c1108] dark:text-[#efdfc5] mb-6"
             >
-              Why Choose Our 
+              Why Choose Our
               <span className="font-semibold text-[#1c1108] dark:text-[#efdfc5] block">
                 Ayurvedic Solutions?
               </span>
@@ -311,7 +330,7 @@ const Home: React.FC = () => {
               transition={{ duration: 0.6 }}
               className="text-4xl md:text-5xl font-light text-[#efdfc5] mb-6"
             >
-              Explore Our 
+              Explore Our
               <span className="font-semibold text-[#efdfc5] block">
                 Wellness Collection
               </span>
@@ -385,7 +404,7 @@ const Home: React.FC = () => {
               transition={{ duration: 0.6 }}
               className="text-4xl md:text-5xl font-light text-[#1c1108] dark:text-[#efdfc5] mb-6"
             >
-              Featured 
+              Featured
               <span className="font-semibold text-[#1c1108] dark:text-[#efdfc5] block">
                 Wellness Products
               </span>
@@ -461,53 +480,55 @@ const Home: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-[#efdfc5] p-8 rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-[#1c11085]/10"
-              >
-                <div className="flex items-center mb-6">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-[#1c1108] fill-current" />
-                  ))}
-                </div>
-                <p className="text-[#1c1108]/80 leading-relaxed mb-6 italic">
-                  "{testimonial.content}"
-                </p>
-                <div className="flex items-center">
-                  <img
-                    src={testimonial.avatar}
-                    alt={testimonial.name}
-                    className="w-12 h-12 rounded-full object-cover mr-4"
-                  />
-                  <div>
-                    <h4 className="font-semibold text-[#1c1108]">
-                      {testimonial.name}
-                    </h4>
-                    <p className="text-sm text-[#1c1108]/70">
-                      {testimonial.role}
-                    </p>
+          {loadingReviews ? (
+            <div className="text-center text-[#efdfc5]">Loading reviews...</div>
+          ) : reviewsError ? (
+            <div className="text-center text-red-500">{reviewsError}</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {reviews.map((review, index) => (
+                <motion.div
+                  key={review.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="bg-[#efdfc5] p-8 rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-[#1c11085]/10"
+                >
+                  <div className="flex items-center mb-6">
+                    {[...Array(review.rating)].map((_, i) => (
+                      <Star key={i} className="w-5 h-5 text-[#1c1108] fill-current" />
+                    ))}
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                  <p className="text-[#1c1108]/80 leading-relaxed mb-6 italic">
+                    "{review.content}"
+                  </p>
+                  <div className="flex items-center">
+                    <div>
+                      <h4 className="font-semibold text-[#1c1108]">
+                        {review.name}
+                      </h4>
+                      <p className="text-sm text-[#1c1108]/70">
+                        {review.role}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
+
       {/* Newsletter Section */}
       <section className="py-24 bg-gradient-to-br from-[#efdfc5] via-[#efdfc5]/90 to-[#efdfc5]/80 dark:from-[#1c1108] dark:via-[#1c1108]/90 dark:to-[#1c1108]/80 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/3777622/pexels-photo-3777622.jpeg?auto=compress&cs=tinysrgb&w=1920')] bg-cover bg-center opacity-10"></div>
+        <div className="absolute inset-0 bg-cover bg-center opacity-10"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-[#efdfc5]/80 to-[#efdfc5]/90 dark:from-[#1c1108]/80 dark:to-[#1c1108]/90"></div>
-        
+
         {/* Decorative elements */}
         <div className="absolute top-10 left-10 w-32 h-32 bg-[#1c1108]/5 dark:bg-[#efdfc5]/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-10 right-10 w-40 h-40 bg-[#1c1108]/5 dark:bg-[#efdfc5]/5 rounded-full blur-3xl"></div>
-        
+
         <div className="relative container mx-auto px-4">
           <div className="text-center">
             <motion.div
@@ -519,24 +540,24 @@ const Home: React.FC = () => {
               <Sparkles className="w-4 h-4 mr-2 text-[#1c1108] dark:text-[#efdfc5]" />
               Join Our Wellness Community
             </motion.div>
-            
+
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               className="text-4xl md:text-5xl font-light text-[#1c1108] dark:text-[#efdfc5] mb-6"
             >
-              Stay Connected with 
+              Stay Connected with
               <span className="block font-semibold">
                 Your Wellness Journey
               </span>
             </motion.h2>
-            
+
             <p className="text-xl text-[#1c1108]/90 dark:text-[#efdfc5]/90 mb-10 max-w-3xl mx-auto leading-relaxed">
-              Join thousands of wellness enthusiasts and receive exclusive offers, ancient wisdom, 
+              Join thousands of wellness enthusiasts and receive exclusive offers, ancient wisdom,
               and the latest insights from our Ayurvedic experts delivered straight to your inbox.
             </p>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -557,7 +578,7 @@ const Home: React.FC = () => {
                 <ArrowRight className="w-5 h-5" />
               </motion.button>
             </motion.div>
-            
+
             <p className="text-sm text-[#1c1108]/70 dark:text-[#efdfc5]/70 mt-4">
               ✨ No spam, only wellness wisdom and exclusive offers
             </p>

@@ -77,3 +77,14 @@ export interface Category {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Review {
+  id: string;
+  name: string;
+  role: string;
+  content: string;
+  rating: number;
+  avatar: string;
+  createdAt: string;
+  updatedAt: string;
+}
