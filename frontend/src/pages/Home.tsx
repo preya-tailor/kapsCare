@@ -7,6 +7,7 @@ import { getCategories } from '../services/categoryService';
 import { getProducts } from '../services/productService';
 import { Category, Product, Review } from '../types';
 import { getReviews } from '../services/reviewService';
+import Dashboard from '../../../backend/public/images/Dashboard.jpg';
 
 const Home: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -110,7 +111,10 @@ const Home: React.FC = () => {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative h-screen bg-gradient-to-br from-[#efdfc5] to-[#efdfc5]/90 overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center opacity-10"></div>
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-10"
+          style={{ backgroundImage: `url(${Dashboard})` }}
+        ></div>
         <div className="absolute inset-0 bg-gradient-to-r from-[#efdfc5]/70 to-transparent"></div>
 
         {/* Floating Elements */}
@@ -470,7 +474,7 @@ const Home: React.FC = () => {
               transition={{ duration: 0.6 }}
               className="text-4xl md:text-5xl font-light text-[#efdfc5] mb-6"
             >
-              What Our 
+              What Our
               <span className="font-semibold text-[#efdfc5] block">
                 Customers Say
               </span>
@@ -522,8 +526,8 @@ const Home: React.FC = () => {
 
       {/* Newsletter Section */}
       <section className="py-24 bg-gradient-to-br from-[#efdfc5] via-[#efdfc5]/90 to-[#efdfc5]/80 dark:from-[#1c1108] dark:via-[#1c1108]/90 dark:to-[#1c1108]/80 relative overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center opacity-10"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-[#efdfc5]/80 to-[#efdfc5]/90 dark:from-[#1c1108]/80 dark:to-[#1c1108]/90"></div>
+        <div className="absolute inset-0 bg-cover bg-center opacity-10" style={{ backgroundImage: `url(${Dashboard})` }}></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#efdfc5]/80 to-[#efdfc5]/90 dark:from-[#1c1108]/80"></div>
 
         {/* Decorative elements */}
         <div className="absolute top-10 left-10 w-32 h-32 bg-[#1c1108]/5 dark:bg-[#efdfc5]/5 rounded-full blur-3xl"></div>
