@@ -1,14 +1,158 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import Button from '../components/Common/Button';
+import CheckoutModal from '../components/Common/CheckoutModal';
+import OTPModal from '../components/Common/OTPModal';
+import SuccessModal from '../components/Common/SuccessModal';
+import { checkoutService } from '../services/checkoutService';
 
 const Cart: React.FC = () => {
-  const { items, totalPrice, updateQuantity, removeFromCart } = useCart();
+  const { items, totalPrice, updateQuantity, removeFromCart, clearCart } = useCart();
+  
+  // Checkout flow state
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [customerDetails, setCustomerDetails] = useState<{
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+  } | null>(null);
+  const [orderId, setOrderId] = useState<string>('');
+  
+  // Loading states
+  const [isLoading, setIsLoading] = useState(false);
+  const [otpError, setOtpError] = useState('');
+  
+  const handleProceedToCheckout = () => {
+    setShowCheckoutModal(true);
+  };
 
-  if (items.length === 0) {
+  const handleCheckoutSubmit = async (details: {
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+  }) => {
+    setIsLoading(true);
+    setCustomerDetails(details);
+    
+    try {
+      const response = await checkoutService.sendOTP({ email: details.email });
+      
+      if (response.success) {
+        setShowCheckoutModal(false);
+        setShowOTPModal(true);
+        setOtpError('');
+      } else {
+        alert(response.message || 'Failed to send OTP. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+      alert('Failed to send OTP. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOTPVerify = async (otp: string) => {
+    if (!customerDetails) return;
+    
+    setIsLoading(true);
+    setOtpError('');
+    
+    try {
+      const response = await checkoutService.verifyOTP({
+        email: customerDetails.email,
+        otp
+      });
+      
+      if (response.success) {
+        // Process the order
+        await processOrder();
+      } else {
+        setOtpError(response.message || 'Invalid OTP. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      setOtpError('Failed to verify OTP. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    if (!customerDetails) return;
+    
+    setIsLoading(true);
+    setOtpError('');
+    
+    try {
+      const response = await checkoutService.sendOTP({ email: customerDetails.email });
+      
+      if (response.success) {
+        alert('OTP sent successfully!');
+      } else {
+        alert(response.message || 'Failed to resend OTP. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error resending OTP:', error);
+      alert('Failed to resend OTP. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const processOrder = async () => {
+    if (!customerDetails) return;
+    
+    try {
+      const orderData = {
+        email: customerDetails.email,
+        customerDetails,
+        cartItems: items.map(item => ({
+          productId: item.productId,
+          product: {
+            id: item.product.id,
+            name: item.product.name,
+            price: item.product.price,
+            mainImage: item.product.mainImage
+          },
+          quantity: item.quantity
+        })),
+        totalAmount: totalPrice + (totalPrice > 50 ? 0 : 5) + totalPrice * 0.08
+      };
+
+      const response = await checkoutService.processOrder(orderData);
+      
+      if (response.success) {
+        setOrderId(response.orderId);
+        setShowOTPModal(false);
+        setShowSuccessModal(true);
+        clearCart();
+      } else {
+        alert(response.message || 'Failed to process order. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error processing order:', error);
+      alert('Failed to process order. Please try again.');
+    }
+  };
+
+  const handleCloseModals = () => {
+    setShowCheckoutModal(false);
+    setShowOTPModal(false);
+    setShowSuccessModal(false);
+    setCustomerDetails(null);
+    setOtpError('');
+    setOrderId('');
+  };
+
+  if (items.length === 0 && !showSuccessModal) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
@@ -153,11 +297,12 @@ const Cart: React.FC = () => {
               </div>
               
               <div className="mt-6 space-y-4">
-                <Link to="/checkout">
-                  <button className="w-full bg-[#1c1108] text-[#efdfc5] py-3 rounded-lg hover:bg-[#3b2b1b] mb-2">
-                    Proceed to Checkout
-                  </button>
-                </Link>
+                <button 
+                  onClick={handleProceedToCheckout}
+                  className="w-full bg-[#1c1108] text-[#efdfc5] py-3 rounded-lg hover:bg-[#3b2b1b] mb-2 transition-colors"
+                >
+                  Proceed to Checkout
+                </button>
                 
                 <Link to="/shop">
                   <button className="w-full outline rounded-lg text-[#1c1108] py-3">
@@ -177,6 +322,32 @@ const Cart: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Checkout Modals */}
+      <CheckoutModal
+        isOpen={showCheckoutModal}
+        onClose={handleCloseModals}
+        onProceed={handleCheckoutSubmit}
+        loading={isLoading}
+      />
+
+      <OTPModal
+        isOpen={showOTPModal}
+        onClose={handleCloseModals}
+        onVerify={handleOTPVerify}
+        onResend={handleResendOTP}
+        email={customerDetails?.email || ''}
+        loading={isLoading}
+        resendLoading={isLoading}
+        error={otpError}
+      />
+
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={handleCloseModals}
+        orderId={orderId}
+        email={customerDetails?.email}
+      />
     </div>
   );
 };

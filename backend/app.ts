@@ -1,7 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { connectDb } from './src/config/db';
-import { connectMongoose } from "./src/config/mongoose";
 import bodyParser from 'body-parser';
 import cors from "cors";
 import router from './src/routes';
@@ -10,7 +9,6 @@ import path from 'path';
 dotenv.config();
 const app = express();
 connectDb();
-connectMongoose();
 
 app.use(cors());
 app.use(bodyParser.json());

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ContactMessage } from "../models/ContactMessage";
+import { prisma } from "../config/db";
 
 export const createContactMessage = async (req: Request, res: Response) => {
   try {
@@ -9,11 +9,13 @@ export const createContactMessage = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const newMessage = await ContactMessage.create({
-      name,
-      email,
-      phone,
-      message,
+    const newMessage = await prisma.contactMessage.create({
+      data: {
+        name,
+        email,
+        phone,
+        message,
+      },
     });
 
     res

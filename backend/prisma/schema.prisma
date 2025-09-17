@@ -51,3 +51,26 @@ model ContactMessage {
   message   String
   createdAt DateTime @default(now())
 }
+
+model Order {
+  id               String      @id @default(auto()) @map("_id") @db.ObjectId
+  customerName     String
+  customerEmail    String
+  customerPhone    String
+  customerAddress  String
+  items            OrderItem[]
+  totalAmount      Float
+  status           String      @default("PENDING")
+  createdAt        DateTime    @default(now())
+}
+
+model OrderItem {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  orderId       String  @db.ObjectId
+  order         Order   @relation(fields: [orderId], references: [id])
+  productId     String  @db.ObjectId
+  productName   String
+  productPrice  Float
+  productImage  String
+  quantity      Int
+}
