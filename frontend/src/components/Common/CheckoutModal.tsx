@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, User, Phone, MapPin } from 'lucide-react';
 import Button from './Button';
@@ -23,18 +23,23 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   onProceed,
   loading = false
 }) => {
-  const [formData, setFormData] = useState({
+  const initialForm = {
     name: '',
     email: '',
     phone: '',
     address: '',
     pinCode: '',
     promoCode: ''
-  });
-
-
+  };
+  const [formData, setFormData] = useState(initialForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData(initialForm);
+      setErrors({});
+    }
+  }, [isOpen]);
+  
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
@@ -128,8 +133,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1c1108] focus:border-transparent transition-colors ${errors.name
-                      ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
-                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
+                    ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                    : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
                     } text-gray-900 dark:text-white`}
                   placeholder="Enter your full name"
                   disabled={loading}
@@ -149,8 +154,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1c1108] focus:border-transparent transition-colors ${errors.email
-                      ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
-                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
+                    ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                    : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
                     } text-gray-900 dark:text-white`}
                   placeholder="Enter your email address"
                   disabled={loading}
@@ -170,8 +175,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1c1108] focus:border-transparent transition-colors ${errors.phone
-                      ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
-                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
+                    ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                    : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
                     } text-gray-900 dark:text-white`}
                   placeholder="Enter your phone number"
                   disabled={loading}
@@ -191,8 +196,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   onChange={(e) => handleInputChange('address', e.target.value)}
                   rows={3}
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1c1108] focus:border-transparent transition-colors resize-none ${errors.address
-                      ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
-                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
+                    ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                    : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
                     } text-gray-900 dark:text-white`}
                   placeholder="Enter your complete address including street, city, state, and postal code"
                   disabled={loading}
@@ -211,8 +216,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   onChange={(e) => handleInputChange('pinCode', e.target.value)}
                   placeholder="Enter pin code"
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1c1108] focus:border-transparent transition-colors ${errors.name
-                      ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
-                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
+                    ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                    : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
                     } text-gray-900 dark:text-white`}
                 />
                 {errors.pinCode && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.pinCode}</p>}
@@ -227,8 +232,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   onChange={(e) => handleInputChange('promoCode', e.target.value)}
                   placeholder="Enter promo code"
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1c1108] focus:border-transparent transition-colors ${errors.name
-                      ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
-                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
+                    ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                    : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
                     } text-gray-900 dark:text-white`}
                 />
               </div>

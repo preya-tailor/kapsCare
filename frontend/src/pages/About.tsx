@@ -104,10 +104,10 @@ const About: React.FC = () => {
   ];
 
   const metrics = [
-    { number: '10K+', label: 'Customers Empowered' },
-    { number: '120+', label: 'Natural Formulations' },
-    { number: '4.9', label: 'Average Rating' },
-    { number: '30+', label: 'Expert Partners' }
+    { number: '10+', label: 'Years of Research and Developemt' },
+    { number: '20K+', label: 'Happy Customers' },
+    { number: '9+', label: 'Countries We Serve' },
+    { number: '4.9', label: 'Average Rating' }
   ];
 
   return (
@@ -124,7 +124,7 @@ const About: React.FC = () => {
           >
             <div className="inline-flex items-center bg-[#1c1108]/10 dark:bg-[#efdfc5]/10 text-[#1c1108] dark:text-[#efdfc5] px-4 py-2 rounded-full text-sm font-medium mb-6">
               <Sparkles className="w-4 h-4 mr-2" />
-              About Ayurvedic KapsCare
+              About KapsCare
             </div>
             <h1 className="text-4xl md:text-6xl font-semibold text-[#1c1108] dark:text-[#efdfc5] leading-tight mb-6">
               Ancient Wisdom, Thoughtfully Crafted For Modern Life
@@ -137,7 +137,7 @@ const About: React.FC = () => {
       </section>
 
       {/* Mission + Image */}
-      <section className="py-20">
+      <section>
         <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
