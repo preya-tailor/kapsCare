@@ -46,7 +46,7 @@ const Contact: React.FC = () => {
     {
       icon: Phone,
       title: 'Phone',
-      details: '+1 (123) 456-7890',
+      details: '+91 8160030897',
       subtitle: 'Mon-Fri 9am-6pm'
     },
     {
@@ -58,8 +58,8 @@ const Contact: React.FC = () => {
     {
       icon: MapPin,
       title: 'Location',
-      details: '123 Wellness Street',
-      subtitle: 'New York, NY 10001'
+      details: '30, Ambika Estate, Kalupur-Naroda Road, Memco cross road, Ahmedabad',
+      subtitle: 'India'
     }
   ];
 

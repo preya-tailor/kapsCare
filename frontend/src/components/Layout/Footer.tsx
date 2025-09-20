@@ -34,10 +34,9 @@ const Footer: React.FC = () => {
   ];
 
   const socialLinks = [
-    { name: 'Facebook', icon: Facebook, url: '#' },
-    { name: 'Twitter', icon: Twitter, url: '#' },
-    { name: 'Instagram', icon: Instagram, url: '#' },
-    { name: 'YouTube', icon: Youtube, url: '#' },
+    { name: 'Facebook', icon: Facebook, url: 'https://www.facebook.com/kapscare' },
+    { name: 'Instagram', icon: Instagram, url: 'https://www.instagram.com/kapscareofficial' },
+    { name: 'YouTube', icon: Youtube, url: 'https://youtu.be/Zehw81BjhCU' },
   ];
 
   return (
@@ -66,7 +65,7 @@ const Footer: React.FC = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-[#1c1108]" />
-                <span className="text-[#1c1108]/80">+1 (555) 123-4567</span>
+                <span className="text-[#1c1108]/80">+91 8160030897</span>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="w-5 h-5 text-[#1c1108]" />

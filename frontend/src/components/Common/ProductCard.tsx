@@ -23,7 +23,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, index = 0 }) => {
       <Link to={`/product/${product.id}`}>
         <div className="relative aspect-square overflow-hidden">
           <img
-            src={`http://localhost:5000${product.mainImage}`}
+            src={product.mainImage}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           />
