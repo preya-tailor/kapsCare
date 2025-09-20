@@ -45,7 +45,7 @@ export const userService = {
           lastName: userData.lastName || '',
           role: userData.role || 'customer',
           phone: userData.phone,
-          address: userData.address,
+        //   address: userData.address,
           createdAt: userData.createdAt ? new Date(userData.createdAt) : new Date(),
           updatedAt: new Date()
         }

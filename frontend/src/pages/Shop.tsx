@@ -35,7 +35,7 @@ const Shop: React.FC = () => {
     fetchCategories();
   }, []);
 
-  // Fetch products (initially or when category changes)
+  // Fetch products function
   const fetchProductsData = async (category: string = 'all') => {
     try {
       setLoading(true);
@@ -44,7 +44,7 @@ const Shop: React.FC = () => {
           ? await getProducts()
           : await getProductsByCategory(category);
       setProducts(data);
-      setOriginalProducts(data); // store full product list
+      setOriginalProducts(data);
     } catch (err) {
       console.error('Error fetching products:', err);
     } finally {
@@ -52,25 +52,20 @@ const Shop: React.FC = () => {
     }
   };
 
+  // Handle URL parameters - only for category
   useEffect(() => {
-    fetchProductsData(selectedCategory);
-  }, [selectedCategory]);
-
-  // Update searchTerm based on URL query
-  useEffect(() => {
-    const query = searchParams.get('search') || '';
-    setSearchTerm(query);
-
-    if (query.trim() === '') {
-      fetchProductsData(selectedCategory);
-    }
-  }, [searchParams, selectedCategory]);
+    const categoryFromUrl = searchParams.get('category') || 'all';
+    
+    // Update category
+    setSelectedCategory(categoryFromUrl);    
+    fetchProductsData('all');
+  }, [searchParams]);
 
   // Filtered & sorted products
   const filteredProducts = useMemo(() => {
     let filtered = [...originalProducts];
 
-    // Filter by search
+    // Filter by search first
     if (searchTerm.trim() !== '') {
       const lowerSearch = searchTerm.toLowerCase();
       filtered = filtered.filter(
@@ -78,14 +73,12 @@ const Shop: React.FC = () => {
           p.name.toLowerCase().includes(lowerSearch) ||
           p.description.toLowerCase().includes(lowerSearch)
       );
+    } else if (selectedCategory !== 'all') {
+      filtered = filtered.filter(p => p.categoryId === selectedCategory);
     }
-
-    // Filter by price range
     filtered = filtered.filter(
       (p) => p.price >= priceRange[0] && p.price <= priceRange[1]
     );
-
-    // Sort products
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'price-low':
@@ -99,24 +92,26 @@ const Shop: React.FC = () => {
     });
 
     return filtered;
-  }, [originalProducts, searchTerm, priceRange, sortBy]);
+  }, [originalProducts, searchTerm, selectedCategory, priceRange, sortBy]);
 
-  // Handle search input change
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (categoryId === 'all') {
+      newSearchParams.delete('category');
+    } else {
+      newSearchParams.set('category', categoryId);
+    }
+    navigate(`/shop?${newSearchParams.toString()}`);
+  };
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
-
-    if (value.trim() === '') {
-      fetchProductsData(selectedCategory);
-      navigate('/shop'); // remove query
-    }
   };
 
-  // Handle search cancel
   const handleCancelSearch = () => {
     setSearchTerm('');
-    fetchProductsData(selectedCategory);
-    navigate('/shop');
   };
 
   const categoryOptions = [
@@ -237,7 +232,7 @@ const Shop: React.FC = () => {
                         name="category"
                         value={category.id}
                         checked={selectedCategory === category.id}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        onChange={(e) => handleCategoryChange(e.target.value)}
                         className="text-green-600 border-gray-300"
                       />
                       <span className="ml-2 text-sm">{category.name}</span>
@@ -269,8 +264,7 @@ const Shop: React.FC = () => {
                   setSelectedCategory('all');
                   setPriceRange([0, 10000]);
                   setSortBy('name');
-                  setSearchTerm('');
-                  fetchProductsData('all');
+                  setSearchTerm(''); // Clear search without navigation
                   navigate('/shop');
                 }}
                 className="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300"
@@ -285,6 +279,11 @@ const Shop: React.FC = () => {
             <div className="mb-4">
               <p className="text-gray-600">
                 Showing {filteredProducts.length} products
+                {selectedCategory !== 'all' && (
+                  <span className="ml-2 text-sm text-gray-500">
+                    in {categoryOptions.find(cat => cat.id === selectedCategory)?.name}
+                  </span>
+                )}
               </p>
             </div>
 
