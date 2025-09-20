@@ -13,7 +13,7 @@ const Shop: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [sortBy, setSortBy] = useState<string>('name');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
@@ -246,7 +246,7 @@ const Shop: React.FC = () => {
                 <input
                   type="range"
                   min="0"
-                  max="10000"
+                  max="1000"
                   value={priceRange[1]}
                   onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
                   className="w-full"
@@ -262,7 +262,7 @@ const Shop: React.FC = () => {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
                   setSelectedCategory('all');
-                  setPriceRange([0, 10000]);
+                  setPriceRange([0, 1000]);
                   setSortBy('name');
                   setSearchTerm(''); // Clear search without navigation
                   navigate('/shop');

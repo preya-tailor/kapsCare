@@ -15,6 +15,8 @@ interface CustomerDetails {
   email: string;
   phone: string;
   address: string;
+  pinCode: string;
+  promoCode?: string;
 }
 
 interface OrderItemLite {
@@ -191,6 +193,8 @@ class EmailService {
                 <p style="margin: 5px 0;"><strong>Email:</strong> ${customer.email}</p>
                 <p style="margin: 5px 0;"><strong>Phone:</strong> ${customer.phone}</p>
                 <p style="margin: 5px 0;"><strong>Address:</strong> ${customer.address}</p>
+                <p style="margin: 5px 0;"><strong>PinCode:</strong> ${customer.pinCode}</p>
+                <p style="margin: 5px 0;"><strong>Promo Code:</strong> ${customer.promoCode || 'N/A'}</p>
               </div>
               
               <h3 style="color: #1c1108; margin-bottom: 15px;">Order Details</h3>

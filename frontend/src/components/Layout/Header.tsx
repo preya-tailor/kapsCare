@@ -77,7 +77,7 @@ const Header: React.FC = () => {
           <Link to="/" className="flex items-center space-x-3">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex items-center space-x-3">
               <div className="relative">
-                <img src={logoImage} alt="Ayurvedic KapsCare Logo" className="w-12 h-12 object-contain" />
+                <img src={logoImage} alt="Ayurvedic KapsCare Logo" className="w-42 h-12 object-contain" />
               </div>
             </motion.div>
           </Link>

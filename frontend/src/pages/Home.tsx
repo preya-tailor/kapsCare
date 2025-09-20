@@ -464,41 +464,41 @@ const Home: React.FC = () => {
           </div>
 
           {loadingReviews ? (
-            <div className="text-center text-[#efdfc5]">Loading reviews...</div>
-          ) : reviewsError ? (
-            <div className="text-center text-red-500">{reviewsError}</div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {reviews.map((review, index) => (
-                <motion.div
-                  key={review.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-[#efdfc5] p-8 rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-[#1c11085]/10"
-                >
-                  <div className="flex items-center mb-6">
-                    {[...Array(review.rating)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 text-[#1c1108] fill-current" />
-                    ))}
-                  </div>
-                  <p className="text-[#1c1108]/80 leading-relaxed mb-6 italic">
-                    "{review.content}"
-                  </p>
-                  <div className="flex items-center">
-                    <div>
-                      <h4 className="font-semibold text-[#1c1108]">
-                        {review.name}
-                      </h4>
-                      <p className="text-sm text-[#1c1108]/70">
-                        {review.role}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
+  <div className="text-center text-[#efdfc5]">Loading reviews...</div>
+) : reviewsError ? (
+  <div className="text-center text-red-500">{reviewsError}</div>
+) : (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {reviews.slice(0, 6).map((review, index) => (
+      <motion.div
+        key={review.id}
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: index * 0.1 }}
+        className="bg-[#f9f9f9] p-8 rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-[#1c11085]/10 flex flex-col justify-between h-full"
+      >
+        {/* Rating Stars */}
+        <div className="flex items-center mb-6">
+          {[...Array(review.rating)].map((_, i) => (
+            <Star key={i} className="w-5 h-5 text-[#1c1108] fill-current" />
+          ))}
+        </div>
+
+        {/* Review Content */}
+        <p className="text-[#1c1108]/80 leading-relaxed mb-6 italic">
+          "{review.content}"
+        </p>
+
+        {/* Customer Name & Role at Bottom */}
+        <div className="mt-auto">
+          <h4 className="font-semibold text-[#1c1108]">{review.name}</h4>
+          <p className="text-sm text-[#1c1108]/70">{review.role}</p>
+        </div>
+      </motion.div>
+    ))}
+  </div>
+)}
+
         </div>
       </section>
 
