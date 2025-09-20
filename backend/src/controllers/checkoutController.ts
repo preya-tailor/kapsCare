@@ -19,6 +19,8 @@ interface ProcessOrderRequest {
     email: string;
     phone: string;
     address: string;
+    pinCode: string;
+    promoCode?: string;
   };
   cartItems: Array<{
     productId: string;
@@ -139,13 +141,11 @@ export const processOrder = async (req: Request, res: Response) => {
     }
 
     // Validate customer details
-    const { name, email: customerEmail, phone, address } = customerDetails;
-    if (!name || !customerEmail || !phone || !address) {
-      return res.status(400).json({
-        success: false,
-        message: 'All customer details are required'
-      });
-    }
+    const { name, email: cEmail, phone, address, pinCode } = customerDetails;
+if (!name || !cEmail || !phone || !address || !pinCode) {
+  return res.status(400).json({ success: false, message: 'Pin code is required' });
+}
+
 
     // Validate cart items
     if (!Array.isArray(cartItems) || cartItems.length === 0) {
@@ -178,6 +178,8 @@ export const processOrder = async (req: Request, res: Response) => {
         customerEmail: customerDetails.email,
         customerPhone: customerDetails.phone,
         customerAddress: customerDetails.address,
+        customerPinCode: customerDetails.pinCode,
+    promoCode: customerDetails.promoCode || null,
         totalAmount,
         status: 'PENDING',
         items: {

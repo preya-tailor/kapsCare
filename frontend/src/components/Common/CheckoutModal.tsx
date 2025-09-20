@@ -11,6 +11,8 @@ interface CheckoutModalProps {
     email: string;
     phone: string;
     address: string;
+    pinCode: string;
+    promoCode?: string;
   }) => void;
   loading?: boolean;
 }
@@ -25,8 +27,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     name: '',
     email: '',
     phone: '',
-    address: ''
+    address: '',
+    pinCode: '',
+    promoCode: ''
   });
+
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -54,6 +59,13 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     } else if (formData.address.trim().length < 10) {
       newErrors.address = 'Please provide a complete address';
     }
+
+    if (!formData.pinCode.trim()) {
+      newErrors.pinCode = 'Pin code is required';
+    } else if (!/^\d{4,10}$/.test(formData.pinCode.trim())) {
+      newErrors.pinCode = 'Enter a valid pin code';
+    }
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -105,7 +117,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-2">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   <User className="w-4 h-4 inline mr-2" />
@@ -115,11 +127,10 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   type="text"
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1c1108] focus:border-transparent transition-colors ${
-                    errors.name
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1c1108] focus:border-transparent transition-colors ${errors.name
                       ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
                       : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
-                  } text-gray-900 dark:text-white`}
+                    } text-gray-900 dark:text-white`}
                   placeholder="Enter your full name"
                   disabled={loading}
                 />
@@ -137,11 +148,10 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1c1108] focus:border-transparent transition-colors ${
-                    errors.email
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1c1108] focus:border-transparent transition-colors ${errors.email
                       ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
                       : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
-                  } text-gray-900 dark:text-white`}
+                    } text-gray-900 dark:text-white`}
                   placeholder="Enter your email address"
                   disabled={loading}
                 />
@@ -159,11 +169,10 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1c1108] focus:border-transparent transition-colors ${
-                    errors.phone
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1c1108] focus:border-transparent transition-colors ${errors.phone
                       ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
                       : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
-                  } text-gray-900 dark:text-white`}
+                    } text-gray-900 dark:text-white`}
                   placeholder="Enter your phone number"
                   disabled={loading}
                 />
@@ -181,11 +190,10 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   value={formData.address}
                   onChange={(e) => handleInputChange('address', e.target.value)}
                   rows={3}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1c1108] focus:border-transparent transition-colors resize-none ${
-                    errors.address
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1c1108] focus:border-transparent transition-colors resize-none ${errors.address
                       ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
                       : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
-                  } text-gray-900 dark:text-white`}
+                    } text-gray-900 dark:text-white`}
                   placeholder="Enter your complete address including street, city, state, and postal code"
                   disabled={loading}
                 />
@@ -194,15 +202,46 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 )}
               </div>
 
+              {/* Pin Code */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Pin Code</label>
+                <input
+                  type="text"
+                  value={formData.pinCode}
+                  onChange={(e) => handleInputChange('pinCode', e.target.value)}
+                  placeholder="Enter pin code"
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1c1108] focus:border-transparent transition-colors ${errors.name
+                      ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
+                    } text-gray-900 dark:text-white`}
+                />
+                {errors.pinCode && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.pinCode}</p>}
+              </div>
+
+              {/* Promo Code (optional) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Promo Code (optional)</label>
+                <input
+                  type="text"
+                  value={formData.promoCode}
+                  onChange={(e) => handleInputChange('promoCode', e.target.value)}
+                  placeholder="Enter promo code"
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#1c1108] focus:border-transparent transition-colors ${errors.name
+                      ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
+                    } text-gray-900 dark:text-white`}
+                />
+              </div>
+
               <div className="pt-4 space-y-3">
                 <Button
                   type="submit"
-                  className="w-full"
+                  className="w-full bg-[#1c1108] rounded-lg"
                   disabled={loading}
                 >
                   {loading ? 'Sending OTP...' : 'Proceed to Verification'}
                 </Button>
-                
+
                 <button
                   type="button"
                   onClick={onClose}

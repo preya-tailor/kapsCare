@@ -130,7 +130,7 @@ const Categories = () => {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="group cursor-pointer"
               >
-                <Link to={`/shop/${category.name.toLowerCase()}`}>
+                <Link to={`/shop?category=${category.id}`}>
                   <div className="relative h-[400px] rounded-3xl overflow-hidden">
                     <div className="absolute inset-0">
                       <img

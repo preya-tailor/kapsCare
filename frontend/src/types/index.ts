@@ -7,6 +7,7 @@ export interface User {
   phone?: string;
   address?: Address;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface Address {

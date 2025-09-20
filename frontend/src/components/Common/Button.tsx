@@ -26,7 +26,7 @@ const Button: React.FC<ButtonProps> = ({
   const baseClasses = 'font-medium rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
   
   const variantClasses = {
-    primary: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500',
+    primary: 'bg-[#1c1108] text-white focus:ring-green-500',
     secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600',
     outline: 'border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white focus:ring-green-500',
     danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',

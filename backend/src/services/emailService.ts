@@ -54,11 +54,11 @@ class EmailService {
       const mailOptions = {
         from: process.env.SMTP_FROM || process.env.SMTP_USER,
         to: email,
-        subject: 'Your OTP for Order Verification - Ayurvedic Kapscare',
+        subject: 'Your OTP for Order Verification - Kapscare',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background-color: #1c1108; color: #efdfc5; padding: 20px; text-align: center;">
-              <h1 style="margin: 0; font-size: 24px;">Ayurvedic Kapscare</h1>
+              <h1 style="margin: 0; font-size: 24px;">Kapscare</h1>
             </div>
             <div style="padding: 30px; background-color: #f9f9f9;">
               <h2 style="color: #1c1108; margin-bottom: 20px;">Order Verification</h2>
@@ -73,7 +73,7 @@ class EmailService {
               </p>
             </div>
             <div style="background-color: #1c1108; color: #efdfc5; padding: 15px; text-align: center; font-size: 12px;">
-              <p style="margin: 0;">© 2024 Ayurvedic Kapscare. All rights reserved.</p>
+              <p style="margin: 0;">© 2024 Kapscare. All rights reserved.</p>
             </div>
           </div>
         `,
@@ -98,18 +98,18 @@ class EmailService {
           </td>
           <td style="padding: 15px; text-align: left; font-weight: 500;">${item.product.name}</td>
           <td style="padding: 15px; text-align: center;">${item.quantity}</td>
-          <td style="padding: 15px; text-align: right; font-weight: 500;">$${(item.product.price * item.quantity).toFixed(2)}</td>
+          <td style="padding: 15px; text-align: right; font-weight: 500;">₹${(item.product.price * item.quantity).toFixed(2)}</td>
         </tr>
       `).join('');
 
       const mailOptions = {
         from: process.env.SMTP_FROM || process.env.SMTP_USER,
         to: customer.email,
-        subject: 'Order Confirmation - Ayurvedic Kapscare',
+        subject: 'Order Confirmation - Kapscare',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background-color: #1c1108; color: #efdfc5; padding: 20px; text-align: center;">
-              <h1 style="margin: 0; font-size: 24px;">Ayurvedic Kapscare</h1>
+              <h1 style="margin: 0; font-size: 24px;">Kapscare</h1>
             </div>
             <div style="padding: 30px; background-color: #f9f9f9;">
               <h2 style="color: #1c1108; margin-bottom: 20px;">Order Confirmation</h2>
@@ -136,7 +136,7 @@ class EmailService {
               </table>
               
               <div style="background-color: #1c1108; color: #efdfc5; padding: 20px; border-radius: 8px; text-align: right;">
-                <h3 style="margin: 0 0 10px 0; font-size: 20px;">Total Amount: $${totalAmount.toFixed(2)}</h3>
+                <h3 style="margin: 0 0 10px 0; font-size: 20px;">Total Amount: ₹${totalAmount.toFixed(2)}</h3>
               </div>
               
               <div style="background-color: #e8f5e8; border: 1px solid #4caf50; padding: 15px; border-radius: 8px; margin-top: 20px;">
@@ -146,7 +146,7 @@ class EmailService {
               </div>
             </div>
             <div style="background-color: #1c1108; color: #efdfc5; padding: 15px; text-align: center; font-size: 12px;">
-              <p style="margin: 0;">© 2024 Ayurvedic Kapscare. All rights reserved.</p>
+              <p style="margin: 0;">© 2024 Kapscare. All rights reserved.</p>
             </div>
           </div>
         `,
@@ -171,14 +171,14 @@ class EmailService {
           </td>
           <td style="padding: 15px; text-align: left; font-weight: 500;">${item.product.name}</td>
           <td style="padding: 15px; text-align: center;">${item.quantity}</td>
-          <td style="padding: 15px; text-align: right; font-weight: 500;">$${(item.product.price * item.quantity).toFixed(2)}</td>
+          <td style="padding: 15px; text-align: right; font-weight: 500;">₹${(item.product.price * item.quantity).toFixed(2)}</td>
         </tr>
       `).join('');
 
       const mailOptions = {
         from: process.env.SMTP_FROM || process.env.SMTP_USER,
         to: process.env.ADMIN_EMAIL || process.env.SMTP_USER,
-        subject: `New Order Received - ${customer.name} - Ayurvedic Kapscare`,
+        subject: `New Order Received - ${customer.name} - Kapscare`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background-color: #1c1108; color: #efdfc5; padding: 20px; text-align: center;">
@@ -209,7 +209,7 @@ class EmailService {
               </table>
               
               <div style="background-color: #1c1108; color: #efdfc5; padding: 20px; border-radius: 8px; text-align: right;">
-                <h3 style="margin: 0 0 10px 0; font-size: 20px;">Total Amount: $${totalAmount.toFixed(2)}</h3>
+                <h3 style="margin: 0 0 10px 0; font-size: 20px;">Total Amount: ₹${totalAmount.toFixed(2)}</h3>
               </div>
               
               <div style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 8px; margin-top: 20px;">
@@ -219,7 +219,7 @@ class EmailService {
               </div>
             </div>
             <div style="background-color: #1c1108; color: #efdfc5; padding: 15px; text-align: center; font-size: 12px;">
-              <p style="margin: 0;">© 2024 Ayurvedic Kapscare. All rights reserved.</p>
+              <p style="margin: 0;">© 2024 Kapscare. All rights reserved.</p>
             </div>
           </div>
         `,

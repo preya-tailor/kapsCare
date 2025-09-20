@@ -56,7 +56,7 @@ const Home: React.FC = () => {
   const benefits = [
     {
       icon: Leaf,
-      title: '100% Natural',
+      title: '100% Ayurvedic',
       description: 'All our products are made from pure, organic ingredients'
     },
     {
@@ -77,34 +77,10 @@ const Home: React.FC = () => {
   ];
 
   const stats = [
-    { number: '5000+', label: 'Years of Wisdom' },
-    { number: '50K+', label: 'Happy Customers' },
-    { number: '100+', label: 'Natural Products' },
+    { number: '10+', label: 'Years of Research and Developemt' },
+    { number: '20K+', label: 'Happy Customers' },
+    { number: '9+', label: 'Countries We Serve' },
     { number: '4.9', label: 'Average Rating' }
-  ];
-
-  const testimonials = [
-    {
-      name: 'Sarah Johnson',
-      role: 'Wellness Enthusiast',
-      content: 'The Ashwagandha powder has completely transformed my stress levels and energy. I feel more balanced and centered.',
-      rating: 5,
-      avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=100'
-    },
-    {
-      name: 'Michael Chen',
-      role: 'Health Coach',
-      content: 'As a health professional, I recommend these products to my clients. The quality is exceptional and results are remarkable.',
-      rating: 5,
-      avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=100'
-    },
-    {
-      name: 'Emma Davis',
-      role: 'Yoga Instructor',
-      content: 'The herbal tea blend has become an essential part of my evening routine. It helps me unwind and sleep better.',
-      rating: 5,
-      avatar: 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=100'
-    }
   ];
 
   return (
@@ -139,13 +115,13 @@ const Home: React.FC = () => {
                 className="inline-flex items-center bg-[#1c1108]/10 backdrop-blur-sm rounded-full px-6 py-2 mb-6 text-[#1c1108] text-sm font-medium"
               >
                 <Sparkles className="w-4 h-4 mr-2 text-[#1c1108]" />
-                Ancient Wisdom, Modern Wellness
+                Balance. Harmony. You.
               </motion.div>
 
               <h1 className="text-5xl md:text-7xl font-light text-[#1c1108] mb-6 leading-tight">
-                Discover Your
+                Nature’s Balance
                 <span className="block font-semibold text-[#1c1108]">
-                  Inner Balance
+                  Your Wellness
                 </span>
               </h1>
 
@@ -203,8 +179,8 @@ const Home: React.FC = () => {
                     <Heart className="w-6 h-6 text-[#efdfc5]" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-[#1c1108]">5000+</p>
-                    <p className="text-sm text-[#1c1108]/70">Years of Ancient Wisdom</p>
+                    <p className="text-2xl font-bold text-[#1c1108]">10+</p>
+                    <p className="text-sm text-[#1c1108]/70">Years of Research and Developemt</p>
                   </div>
                 </div>
               </motion.div>
@@ -359,8 +335,8 @@ const Home: React.FC = () => {
                   whileHover={{ y: -10, scale: 1.02 }}
                   className="group cursor-pointer"
                 >
-                  <div className="bg-[#efdfc5] rounded-3xl shadow-lg overflow-hidden group-hover:shadow-2xl transition-all duration-500 border border-[#1c1108]/10">
-                    <div className="relative h-64 overflow-hidden">
+                  <div className="bg-[#efdfc5] rounded-3xl shadow-lg overflow-hidden group-hover:shadow-2xl transition-all duration-500 border border-[#1c1108]/10 flex flex-col h-full">
+                    <div className="relative h-80 overflow-hidden">
                       <img
                         src={`http://localhost:5000${category.image}`}
                         alt={category.name}
@@ -376,10 +352,13 @@ const Home: React.FC = () => {
                       <p className="text-[#1c1108]/80 leading-relaxed">
                         {category.description}
                       </p>
-                      <div className="mt-4 flex items-center text-[#1c1108] group-hover:text-[#1c1108]/80 transition-colors duration-300">
-                        <span className="text-sm font-medium">Explore Collection</span>
-                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-                      </div>
+                      <Link to={`/shop?category=${category.id}`}>
+  <div className="mt-4 flex items-center text-[#1c1108] group-hover:text-[#1c1108]/80 transition-colors duration-300">
+    <span className="text-sm font-medium">Explore Collection</span>
+    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+  </div>
+</Link>
+
                     </div>
                   </div>
                 </motion.div>
@@ -567,20 +546,23 @@ const Home: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto"
+              style={{ justifyContent: 'center' }}
             >
-              <input
+              {/* <input
                 type="email"
                 placeholder="Enter your email address"
                 className="flex-1 px-6 py-4 rounded-full border-none outline-none text-[#efdfc5] placeholder-[#1c1108]/50 shadow-lg backdrop-blur-sm bg-[#efdfc5]/95 focus:bg-[#efdfc5] transition-all duration-300"
-              />
-              <motion.button
-                whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.2)" }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-[#1c1108] text-[#efdfc5] px-8 py-4 rounded-full font-semibold hover:bg-[#1c1108]/90 transition-all duration-300 shadow-xl flex items-center justify-center space-x-2"
-              >
-                <span>Subscribe Now</span>
-                <ArrowRight className="w-5 h-5" />
-              </motion.button>
+              /> */}
+              <Link to="/contact">
+  <motion.button
+    whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.2)" }}
+    whileTap={{ scale: 0.95 }}
+    className="bg-[#1c1108] text-[#efdfc5] px-8 py-4 rounded-full font-semibold hover:bg-[#1c1108]/90 transition-all duration-300 shadow-xl flex items-center justify-center space-x-2"
+  >
+    <span>Subscribe Now</span>
+    <ArrowRight className="w-5 h-5" />
+  </motion.button>
+</Link>
             </motion.div>
 
             <p className="text-sm text-[#1c1108]/70 dark:text-[#efdfc5]/70 mt-4">

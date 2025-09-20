@@ -1,73 +1,97 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Filter, Grid, List, SlidersHorizontal } from 'lucide-react';
+import { Filter, Grid, List, SlidersHorizontal, Search, X } from 'lucide-react';
 import ProductCard from '../components/Common/ProductCard';
 import { getProducts, getProductsByCategory } from '../services/productService';
 import { getCategories } from '../services/categoryService';
 import { Product, Category } from '../types';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 const Shop: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [originalProducts, setOriginalProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]); // Adjusted for realistic price range
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [sortBy, setSortBy] = useState<string>('name');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  // Fetch categories
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchCategories = async () => {
       try {
-        setLoading(true);
-        const [categoriesData, productsData] = await Promise.all([
-          getCategories(),
-          getProducts()
-        ]);
-        setCategories(categoriesData);
-        setProducts(productsData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
+        const data = await getCategories();
+        setCategories(data);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
       }
     };
-
-    fetchData();
+    fetchCategories();
   }, []);
 
-useEffect(() => {
-  const fetchProductsByCategory = async () => {
+  // Fetch products (initially or when category changes)
+  const fetchProductsData = async (category: string = 'all') => {
     try {
       setLoading(true);
-      const data = await getProductsByCategory(selectedCategory);
+      const data =
+        category === 'all'
+          ? await getProducts()
+          : await getProductsByCategory(category);
       setProducts(data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
+      setOriginalProducts(data); // store full product list
+    } catch (err) {
+      console.error('Error fetching products:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  fetchProductsByCategory();
-}, [selectedCategory]);
+  useEffect(() => {
+    fetchProductsData(selectedCategory);
+  }, [selectedCategory]);
 
+  // Update searchTerm based on URL query
+  useEffect(() => {
+    const query = searchParams.get('search') || '';
+    setSearchTerm(query);
 
+    if (query.trim() === '') {
+      fetchProductsData(selectedCategory);
+    }
+  }, [searchParams, selectedCategory]);
+
+  // Filtered & sorted products
   const filteredProducts = useMemo(() => {
-    let filtered = products;
+    let filtered = [...originalProducts];
+
+    // Filter by search
+    if (searchTerm.trim() !== '') {
+      const lowerSearch = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (p) =>
+          p.name.toLowerCase().includes(lowerSearch) ||
+          p.description.toLowerCase().includes(lowerSearch)
+      );
+    }
 
     // Filter by price range
-    filtered = filtered.filter(product => 
-      product.price >= priceRange[0] && product.price <= priceRange[1]
+    filtered = filtered.filter(
+      (p) => p.price >= priceRange[0] && p.price <= priceRange[1]
     );
 
     // Sort products
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'price-low':
-          return Number(a.price) - Number(b.price);
+          return a.price - b.price;
         case 'price-high':
-          return Number(b.price) - Number(a.price);
+          return b.price - a.price;
         case 'name':
         default:
           return a.name.localeCompare(b.name);
@@ -75,15 +99,29 @@ useEffect(() => {
     });
 
     return filtered;
-  }, [products, priceRange, sortBy]);
+  }, [originalProducts, searchTerm, priceRange, sortBy]);
 
-  // Update the categories section in the render
+  // Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    if (value.trim() === '') {
+      fetchProductsData(selectedCategory);
+      navigate('/shop'); // remove query
+    }
+  };
+
+  // Handle search cancel
+  const handleCancelSearch = () => {
+    setSearchTerm('');
+    fetchProductsData(selectedCategory);
+    navigate('/shop');
+  };
+
   const categoryOptions = [
     { id: 'all', name: 'All Products' },
-    ...categories.map(cat => ({
-      id: cat.id,
-      name: cat.name
-    }))
+    ...categories.map((cat) => ({ id: cat.id, name: cat.name })),
   ];
 
   if (loading) {
@@ -112,8 +150,25 @@ useEffect(() => {
           </p>
         </div>
 
-        {/* Controls */}
+        {/* Search & Controls */}
         <div className="flex flex-col md:flex-row gap-4 mb-8">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-600" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-400"
+            />
+            {searchTerm && (
+              <X
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 cursor-pointer"
+                onClick={handleCancelSearch}
+              />
+            )}
+          </div>
+
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -130,12 +185,11 @@ useEffect(() => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-1 text-sm bg-white text-gray-900 shadow-sm"
+                className="border border-gray-300 rounded-lg px-3 py-1 text-sm bg-white shadow-sm"
               >
                 <option value="name">Name</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
-                <option value="rating">Rating</option>
               </select>
             </div>
 
@@ -144,7 +198,9 @@ useEffect(() => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}
+                className={`p-2 rounded-lg ${
+                  viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
+                }`}
               >
                 <Grid className="w-4 h-4" />
               </motion.button>
@@ -152,7 +208,9 @@ useEffect(() => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}
+                className={`p-2 rounded-lg ${
+                  viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
+                }`}
               >
                 <List className="w-4 h-4" />
               </motion.button>
@@ -163,20 +221,14 @@ useEffect(() => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Filters Sidebar */}
           <div className={`lg:col-span-1 ${showFilters ? 'block' : 'hidden'} lg:block`}>
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700"
-            >
+            <motion.div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
               <div className="flex items-center space-x-2 mb-6">
-                <SlidersHorizontal className="w-5 h-5 text-green-600 dark:text-green-400" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Filters</h3>
+                <SlidersHorizontal className="w-5 h-5 text-green-600" />
+                <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
               </div>
 
-              {/* Category Filter */}
               <div className="mb-6">
-                <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Category</h4>
+                <h4 className="text-sm font-medium mb-3">Category</h4>
                 <div className="space-y-2">
                   {categoryOptions.map((category) => (
                     <label key={category.id} className="flex items-center">
@@ -186,45 +238,42 @@ useEffect(() => {
                         value={category.id}
                         checked={selectedCategory === category.id}
                         onChange={(e) => setSelectedCategory(e.target.value)}
-                        className="text-green-600 focus:ring-green-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                        className="text-green-600 border-gray-300"
                       />
-                      <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                        {category.name}
-                      </span>
+                      <span className="ml-2 text-sm">{category.name}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              {/* Price Range Filter */}
               <div className="mb-6">
-                <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Price Range</h4>
-                <div className="space-y-2">
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={priceRange[1]}
-                    onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                    <span>${priceRange[0]}</span>
-                    <span>${priceRange[1]}</span>
-                  </div>
+                <h4 className="text-sm font-medium mb-3">Price Range</h4>
+                <input
+                  type="range"
+                  min="0"
+                  max="10000"
+                  value={priceRange[1]}
+                  onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-sm">
+                  <span>₹{priceRange[0]}</span>
+                  <span>₹{priceRange[1]}</span>
                 </div>
               </div>
 
-              {/* Reset Filters */}
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
                   setSelectedCategory('all');
-                  setPriceRange([0, 100]);
+                  setPriceRange([0, 10000]);
                   setSortBy('name');
+                  setSearchTerm('');
+                  fetchProductsData('all');
+                  navigate('/shop');
                 }}
-                className="w-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
+                className="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300"
               >
                 Reset Filters
               </motion.button>
@@ -234,29 +283,25 @@ useEffect(() => {
           {/* Products Grid */}
           <div className="lg:col-span-3">
             <div className="mb-4">
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-gray-600">
                 Showing {filteredProducts.length} products
               </p>
             </div>
 
             {filteredProducts.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-gray-500 dark:text-gray-400 text-lg">
+                <p className="text-gray-500 text-lg">
                   No products found matching your filters.
                 </p>
               </div>
             ) : (
               <div className={`grid gap-6 ${
-                viewMode === 'grid' 
-                  ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
+                viewMode === 'grid'
+                  ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
                   : 'grid-cols-1'
               }`}>
                 {filteredProducts.map((product, index) => (
-                  <ProductCard 
-                    key={product.id} 
-                    product={product} 
-                    index={index} 
-                  />
+                  <ProductCard key={product.id} product={product} index={index} />
                 ))}
               </div>
             )}

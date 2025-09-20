@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
 import Button from '../components/Common/Button';
 import CheckoutModal from '../components/Common/CheckoutModal';
 import OTPModal from '../components/Common/OTPModal';
@@ -11,6 +12,8 @@ import { checkoutService } from '../services/checkoutService';
 
 const Cart: React.FC = () => {
   const { items, totalPrice, updateQuantity, removeFromCart, clearCart } = useCart();
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
   
   // Checkout flow state
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
@@ -21,6 +24,8 @@ const Cart: React.FC = () => {
     email: string;
     phone: string;
     address: string;
+    pinCode: string;
+    promoCode?: string;
   } | null>(null);
   const [orderId, setOrderId] = useState<string>('');
   
@@ -29,6 +34,18 @@ const Cart: React.FC = () => {
   const [otpError, setOtpError] = useState('');
   
   const handleProceedToCheckout = () => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      // Redirect to login page with return URL
+      navigate('/login', { 
+        state: { 
+          returnTo: '/cart',
+          message: 'Please login to place an order' 
+        } 
+      });
+      return;
+    }
+    
     setShowCheckoutModal(true);
   };
 
@@ -37,6 +54,8 @@ const Cart: React.FC = () => {
     email: string;
     phone: string;
     address: string;
+    pinCode: string;
+    promoCode?: string;
   }) => {
     setIsLoading(true);
     setCustomerDetails(details);
@@ -211,7 +230,7 @@ const Cart: React.FC = () => {
                       {item.product.name}
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">
-                      ${item.product.price} each
+                      ₹{item.product.price} each
                     </p>
                     
                     <div className="flex items-center space-x-4">
@@ -242,7 +261,7 @@ const Cart: React.FC = () => {
                   
                   <div className="text-right">
                     <div className="text-lg font-semibold text-gray-900 dark:text-white">
-                      ${(item.product.price * item.quantity)}
+                      ₹{(item.product.price * item.quantity)}
                     </div>
                   </div>
                 </motion.div>
@@ -268,21 +287,14 @@ const Cart: React.FC = () => {
                     Subtotal ({items.length} items)
                   </span>
                   <span className="font-medium text-gray-900 dark:text-white">
-                    ${totalPrice}
+                    ₹{totalPrice}
                   </span>
                 </div>
                 
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">Shipping</span>
                   <span className="font-medium text-gray-900 dark:text-white">
-                    {totalPrice > 50 ? 'Free' : '$5.00'}
-                  </span>
-                </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Tax</span>
-                  <span className="font-medium text-gray-900 dark:text-white">
-                    ${(totalPrice * 0.08)}
+                    {totalPrice > 50 ? 'Free' : '₹5.00'}
                   </span>
                 </div>
                 
@@ -291,7 +303,7 @@ const Cart: React.FC = () => {
                 <div className="flex justify-between text-lg font-bold">
                   <span className="text-gray-900 dark:text-white">Total</span>
                   <span className="text-[#1c1108]">
-                    ${(totalPrice + (totalPrice > 50 ? 0 : 5) + totalPrice * 0.08)}
+                    ₹{(totalPrice)}
                   </span>
                 </div>
               </div>
@@ -314,7 +326,7 @@ const Cart: React.FC = () => {
               {totalPrice < 50 && (
                 <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                   <p className="text-sm text-[#1c1108]">
-                    Add ${(50 - totalPrice)} more to get free shipping!
+                    Add ₹{(50 - totalPrice)} more to get free shipping!
                   </p>
                 </div>
               )}

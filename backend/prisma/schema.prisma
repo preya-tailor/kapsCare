@@ -58,6 +58,8 @@ model Order {
   customerEmail    String
   customerPhone    String
   customerAddress  String
+  customerPinCode  String    
+  promoCode        String?    
   items            OrderItem[]
   totalAmount      Float
   status           String      @default("PENDING")
@@ -73,4 +75,24 @@ model OrderItem {
   productPrice  Float
   productImage  String
   quantity      Int
+}
+
+model User {
+  id        String   @id @map("_id") @db.ObjectId
+  firebaseId String? @unique
+  email     String?  @unique
+  firstName String
+  lastName  String
+  phone     String?  @unique
+  role      String   @default("customer")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+type Address {
+  street  String
+  city    String
+  state   String
+  zipCode String
+  country String
 }

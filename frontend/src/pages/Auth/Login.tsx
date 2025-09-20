@@ -1,24 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Smartphone, Shield } from 'lucide-react';
+import { Smartphone, Shield } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
-  const [identifier, setIdentifier] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [step, setStep] = useState<'request' | 'verify'>('request');
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
-  const { requestOtp, verifyOtp, isLoading } = useAuth();
+  const { requestOtp, verifyOtp, isLoading, isAuthenticated } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Get return URL and message from location state
+  const returnTo = location.state?.returnTo || '/';
+  const loginMessage = location.state?.message || '';
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(returnTo, { replace: true });
+    }
+  }, [isAuthenticated, navigate, returnTo]);
+
+  // Set message from location state
+  useEffect(() => {
+    if (loginMessage) {
+      setMessage(loginMessage);
+    }
+  }, [loginMessage]);
 
   const handleRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     try {
-      await requestOtp(identifier);
+      await requestOtp(phoneNumber);
       setStep('verify');
-    } catch (err) {
-      setError('Failed to send OTP. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'Failed to send OTP. Please try again.');
     }
   };
 
@@ -26,14 +48,17 @@ const Login: React.FC = () => {
     e.preventDefault();
     setError('');
     try {
-      await verifyOtp(identifier, otp);
-    } catch (err) {
-      setError('Invalid OTP. Please try again.');
+      await verifyOtp(otp);
+    } catch (err: any) {
+      setError(err.message || 'Invalid OTP. Please try again.');
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4">
+      {/* reCAPTCHA container - hidden but required for Firebase Phone Auth */}
+      <div id="recaptcha-container"></div>
+      
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -45,9 +70,19 @@ const Login: React.FC = () => {
             Sign In
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Login using email or mobile number with OTP verification
+            Login using your mobile number with OTP verification
           </p>
         </div>
+
+        {message && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6"
+          >
+            <p className="text-blue-800 dark:text-blue-200 text-sm">{message}</p>
+          </motion.div>
+        )}
 
         {error && (
           <motion.div
@@ -62,37 +97,40 @@ const Login: React.FC = () => {
         {step === 'request' ? (
           <form onSubmit={handleRequest} className="space-y-6">
             <div>
-              <label htmlFor="identifier" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Email or Mobile Number
+              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Mobile Number
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
-                  type="text"
-                  id="identifier"
-                  name="identifier"
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
+                  type="tel"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                   required
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1c1108]-500 dark:bg-gray-700 dark:text-white"
-                  placeholder="Enter email or mobile number"
+                  placeholder="Enter mobile number (e.g., +1234567890)"
                 />
               </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Include country code (e.g., +1 for US, +91 for India)
+              </p>
             </div>
 
             <button
               type="submit"
-              disabled={isLoading || !identifier}
+              disabled={isLoading || !phoneNumber}
               className="w-full bg-[#1c1108] text-[#efdfc5] py-3 rounded-lg hover:bg-[#3b2b1b] disabled:opacity-60"
             >
-              Send OTP
+              {isLoading ? 'Sending OTP...' : 'Send OTP'}
             </button>
           </form>
         ) : (
           <form onSubmit={handleVerify} className="space-y-6">
             <div>
               <label htmlFor="otp" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Enter OTP sent to {identifier}
+                Enter OTP sent to {phoneNumber}
               </label>
               <div className="relative">
                 <Shield className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -118,11 +156,11 @@ const Login: React.FC = () => {
                 onClick={() => setStep('request')}
                 className="text-[#1c1108] hover:underline"
               >
-                Change email/number
+                Change number
               </button>
               <button
                 type="button"
-                onClick={() => requestOtp(identifier)}
+                onClick={() => requestOtp(phoneNumber)}
                 className="text-[#1c1108] hover:underline"
               >
                 Resend OTP
@@ -134,7 +172,7 @@ const Login: React.FC = () => {
               disabled={isLoading || otp.length < 4}
               className="w-full bg-[#1c1108] text-[#efdfc5] py-3 rounded-lg hover:bg-[#3b2b1b] disabled:opacity-60"
             >
-              Verify & Login
+              {isLoading ? 'Verifying...' : 'Verify & Login'}
             </button>
           </form>
         )}

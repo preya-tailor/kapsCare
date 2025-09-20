@@ -18,6 +18,8 @@ interface ProcessOrderRequest {
     email: string;
     phone: string;
     address: string;
+    pinCode: string;
+    promoCode?: string;
   };
   cartItems: Array<{
     productId: string;
@@ -48,4 +50,7 @@ export const checkoutService = {
     return response.data;
   }
 };
+
+
+
 
